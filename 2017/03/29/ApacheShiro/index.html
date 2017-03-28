@@ -1,0 +1,714 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Shiro,权限控制," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="定义
+shiro是一个简单强大并且易于使用的一个权限控制框架，它提供了认证（authentication）, 授权（authorization）,加密（ cryptography）, and session管理1器（session management）。它可被用于任何的应用。比如命令行应用，移动应用，web企业应用
+
+安利一篇好文RBAC新解解释了关于角色的权限控制与关于资源的权限控制的问题
+需">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Apache Shiro">
+<meta property="og:url" content="http://yoursite.com/2017/03/29/ApacheShiro/index.html">
+<meta property="og:site_name" content="Wuhulala">
+<meta property="og:description" content="定义
+shiro是一个简单强大并且易于使用的一个权限控制框架，它提供了认证（authentication）, 授权（authorization）,加密（ cryptography）, and session管理1器（session management）。它可被用于任何的应用。比如命令行应用，移动应用，web企业应用
+
+安利一篇好文RBAC新解解释了关于角色的权限控制与关于资源的权限控制的问题
+需">
+<meta property="og:updated_time" content="2017-03-29T02:39:00.601Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Apache Shiro">
+<meta name="twitter:description" content="定义
+shiro是一个简单强大并且易于使用的一个权限控制框架，它提供了认证（authentication）, 授权（authorization）,加密（ cryptography）, and session管理1器（session management）。它可被用于任何的应用。比如命令行应用，移动应用，web企业应用
+
+安利一篇好文RBAC新解解释了关于角色的权限控制与关于资源的权限控制的问题
+需">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/03/29/ApacheShiro/"/>
+
+
+
+
+
+  <title> Apache Shiro | Wuhulala </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wuhulala</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/29/ApacheShiro/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wuhuala">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wuhulala">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Apache Shiro
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T02:39:00+00:00">
+                2017-03-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><blockquote>
+<p>shiro是一个简单强大并且易于使用的一个权限控制框架，它提供了认证（authentication）, 授权（authorization）,加密（ cryptography）, and session管理1器（session management）。它可被用于任何的应用。比如命令行应用，移动应用，web企业应用</p>
+</blockquote>
+<p>安利一篇好文<a href="http://globeeip.iteye.com/blog/1236167" target="_blank" rel="external">RBAC新解</a>解释了关于角色的权限控制与关于资源的权限控制的问题</p>
+<h2 id="需了解的概念"><a href="#需了解的概念" class="headerlink" title="需了解的概念"></a>需了解的概念</h2><p><a href="http://wiki.jikexueyuan.com/project/shiro/overview.html" target="_blank" rel="external">详细介绍</a></p>
+<ol>
+<li><p><strong>Principals</strong> ：用于验证身份的输入。比如姓名，姓氏，身份证号，用户名</p>
+</li>
+<li><p><strong>Credentials</strong> ： 用于验证身份的输入。密码，生物识别数据，X509证书，</p>
+</li>
+<li><p><strong>Subject</strong>：主体，代表了当前 “用户”，这个用户不一定是一个具体的人，与当前应用交互的任何东西都是 Subject，如网络爬虫，机器人等；即一个抽象概念；所有 Subject 都绑定到 SecurityManager，与 Subject 的所有交互都会委托给 SecurityManager；可以把 Subject 认为是一个门面；SecurityManager 才是实际的执行者；</p>
+</li>
+<li><p><strong>SecurityManager</strong>：安全管理器；即所有与安全有关的操作都会与 SecurityManager 交互；且它管理着所有 Subject；可以看出它是 Shiro 的核心，它负责与后边介绍的其他组件进行交互，如果学习过 SpringMVC，你可以把它看成 DispatcherServlet 前端控制器；</p>
+</li>
+<li><p><strong>Realm</strong>：域，Shiro 从从 Realm 获取安全数据（如用户、角色、权限），就是说 SecurityManager 要验证用户身份，那么它需要从 Realm 获取相应的用户进行比较以确定用户身份是否合法；也需要从 Realm 得到用户相应的角色 / 权限进行验证用户是否能进行操作；可以把 Realm 看成 DataSource，即安全数据源。</p>
+</li>
+</ol>
+<h2 id="功能实现"><a href="#功能实现" class="headerlink" title="功能实现"></a>功能实现</h2><h3 id="1-认证（Authentication）"><a href="#1-认证（Authentication）" class="headerlink" title="1. 认证（Authentication）"></a>1. 认证（Authentication）</h3><p>   提供用户身份，我们经常称之为登录，shiro中的使用reaml进行用户登录</p>
+<p>   认证有如下步骤<br>   (1). 创建令牌<br>   (2). 提交令牌到认证系统<br>   (3). 认证成功，允许访问；认证失败未超过固定次数，返回重新认证；否则直接阻止其访问</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//创建一个用户-密码令牌</span></div><div class="line">UsernamePasswordToken token = <span class="keyword">new</span> UsernamePasswordToken( username, password );</div><div class="line"></div><div class="line"><span class="comment">//设置记住自己 </span></div><div class="line">token.setRememberMe(<span class="keyword">true</span>);</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">//要确保你取出的subject是你自己的subject，因为大部分我们的登录都是这种都是会出现并发情况的，但是shiro的这个getSubject是线程安全的，因为每一个线程都有自己的绑定的subject,有兴趣可以看一下方法实现 </span></div><div class="line">Subject currentUser = SecurityUtils.getSubject();</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">    <span class="comment">//登录认证</span></div><div class="line">    currentUser.login(token);</div><div class="line">&#125; <span class="keyword">catch</span>  ( UnknownAccountException uae ) &#123; </div><div class="line"> <span class="comment">//未知账户错误</span></div><div class="line">&#125; <span class="keyword">catch</span>  ( IncorrectCredentialsException ice ) &#123;</div><div class="line"><span class="comment">//认证失败</span></div><div class="line">&#125; <span class="keyword">catch</span>  ( LockedAccountException lae ) &#123; </div><div class="line"><span class="comment">//多次认证失败 账户被锁定</span></div><div class="line">&#125; <span class="keyword">catch</span>  ( ExcessiveAttemptsException eae ) &#123;</div><div class="line"><span class="comment">//当系统配置为仅在一段时间内允许一定数量的身份验证尝试并且当前会话无法在该数字内成功验证时抛出此异常。</span></div><div class="line">&#125;  <span class="keyword">catch</span> ( AuthenticationException ae ) &#123;</div><div class="line">    <span class="comment">//意外的错误 因为官方打了个问号 基本不会发生?</span></div><div class="line">&#125;</div><div class="line"><span class="comment">//登录成功</span></div></pre></td></tr></table></figure>
+<h3 id="授权（Authorization）"><a href="#授权（Authorization）" class="headerlink" title="授权（Authorization）"></a>授权（Authorization）</h3><p>  对用户进行访问控制，授权粒度支持角色和权限。如果支持到权限，权限的体现可以在菜单，或者按钮或者我们任何已知的资源。如果大家对rest架构有理解的话就很好理解这个权限控制了。</p>
+<h4 id="基于角色级别的控制"><a href="#基于角色级别的控制" class="headerlink" title="基于角色级别的控制"></a>基于角色级别的控制</h4><p>  编程式控制<br>  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Subject subject = SecurityUtils.getSubject();</div><div class="line"><span class="keyword">if</span>(subject.hasRole(“admin”)) &#123;</div><div class="line">  <span class="comment">//有权限</span></div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">  <span class="comment">//无权限</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>  注解式控制<br>  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@RequiresRoles</span>(<span class="string">"admin"</span>)</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">hello</span><span class="params">()</span> </span>&#123;</div><div class="line">  <span class="comment">//有权限</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>  <a href="http://shiro.apache.org/jsp-tag-library.html" target="_blank" rel="external">JSP标签</a><br>  <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&lt;shiro:hasRole name="admin"&gt;</div><div class="line"> &lt;!--有admin角色处理--&gt;</div><div class="line">&lt;/shiro:hasRole&gt;</div><div class="line">&lt;shiro:lacksRole name="admin"&gt;</div><div class="line"> &lt;!--无admin角色处理--&gt;</div><div class="line">&lt;/shiro:lacksRole&gt;</div><div class="line">&lt;shiro:hasAnyRoles name="admin,user"&gt;</div><div class="line">&lt;!--有admin或user角色进行处理--&gt;</div><div class="line">&lt;/shiro:hasAnyRoles&gt;</div></pre></td></tr></table></figure></p>
+<h4 id="基于权限级别的控制"><a href="#基于权限级别的控制" class="headerlink" title="基于权限级别的控制"></a>基于权限级别的控制</h4><p>  比如我们资源A用户只有读的权限，那么我们只需要为用户配置A:read这个权限，然后在代码中进行控制。<br>  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Subject subject = SecurityUtils.getSubject();</div><div class="line"><span class="keyword">if</span>(subject.isPermitted(<span class="string">"A:read"</span>))&#123;</div><div class="line">  <span class="comment">//有权限处理</span></div><div class="line">&#125;<span class="keyword">else</span>&#123;</div><div class="line">  <span class="comment">//无权限处理</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>   注解式控制<br>  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@RequiresPermissions</span>(<span class="string">"A:read"</span>)</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">hello</span><span class="params">()</span> </span>&#123;</div><div class="line">  <span class="comment">//有权限</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>  JSP标签<br>  <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&lt;shiro:hasPermission name="users:manage"&gt;</div><div class="line">      &lt;!--有user:manager 权限处理--&gt;</div><div class="line">  &lt;/shiro:hasPermission&gt;</div><div class="line">  &lt;shiro:lacksPermission name="users:manage"&gt;</div><div class="line">      &lt;!--没有user:manager 权限处理--&gt;</div><div class="line">  &lt;/shiro:lacksPermission&gt;</div></pre></td></tr></table></figure></p>
+<h3 id="加密（Cryptography）"><a href="#加密（Cryptography）" class="headerlink" title="加密（Cryptography）"></a>加密（Cryptography）</h3><p>   保护我们的数据，shiro提供了很多的工具类提供我们的加密功能。</p>
+<h3 id="session管理器（Session-Management）"><a href="#session管理器（Session-Management）" class="headerlink" title="session管理器（Session Management）"></a>session管理器（Session Management）</h3><p>   管理用户会话的状态</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Shiro/" rel="tag"># Shiro</a>
+          
+            <a href="/tags/权限控制/" rel="tag"># 权限控制</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/28/基于docker的hexo博客系统/" rel="next" title="基于docker的hexo博客系统">
+                <i class="fa fa-chevron-left"></i> 基于docker的hexo博客系统
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/03/29/Shiro-Session管理/" rel="prev" title="session管理器">
+                session管理器 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="Wuhuala" />
+          <p class="site-author-name" itemprop="name">Wuhuala</p>
+           
+              <p class="site-description motion-element" itemprop="description">Now I need to imitate</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#定义"><span class="nav-number">1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#需了解的概念"><span class="nav-number">2.</span> <span class="nav-text">需了解的概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#功能实现"><span class="nav-number">3.</span> <span class="nav-text">功能实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-认证（Authentication）"><span class="nav-number">3.1.</span> <span class="nav-text">1. 认证（Authentication）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#授权（Authorization）"><span class="nav-number">3.2.</span> <span class="nav-text">授权（Authorization）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#基于角色级别的控制"><span class="nav-number">3.2.1.</span> <span class="nav-text">基于角色级别的控制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#基于权限级别的控制"><span class="nav-number">3.2.2.</span> <span class="nav-text">基于权限级别的控制</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#加密（Cryptography）"><span class="nav-number">3.3.</span> <span class="nav-text">加密（Cryptography）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#session管理器（Session-Management）"><span class="nav-number">3.4.</span> <span class="nav-text">session管理器（Session Management）</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wuhuala</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
