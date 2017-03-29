@@ -89,14 +89,14 @@
 
 <meta name="description" content="登录流程图">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Shiro登录与授权">
+<meta property="og:title" content="Shiro登录">
 <meta property="og:url" content="http://yoursite.com/2017/03/29/Shiro登录与授权/index.html">
 <meta property="og:site_name" content="Wuhulala">
 <meta property="og:description" content="登录流程图">
 <meta property="og:image" content="http://yoursite.com/images/login-process.png">
-<meta property="og:updated_time" content="2017-03-29T12:56:25.497Z">
+<meta property="og:updated_time" content="2017-04-01T08:45:31.409Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Shiro登录与授权">
+<meta name="twitter:title" content="Shiro登录">
 <meta name="twitter:description" content="登录流程图">
 <meta name="twitter:image" content="http://yoursite.com/images/login-process.png">
 
@@ -132,7 +132,7 @@
 
 
 
-  <title> Shiro登录与授权 | Wuhulala </title>
+  <title> Shiro登录 | Wuhulala </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -272,7 +272,7 @@
             
             
               
-                Shiro登录与授权
+                Shiro登录
               
             
           </h1>
@@ -325,13 +325,17 @@
       
         <h2 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h2><h3 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h3><p><img src="/images/login-process.png" alt="Shiro登录处理流程图"></p>
 <a id="more"></a>
-<p>通过上图我们可以看到，执行最终的判断登录信息和写入权限是由Realm执行的。</p>
+<p>通过上图我们可以看到，执行最终的判断登录信息动作是由Realm执行的。</p>
 <ol>
 <li>首先调用 Subject.login(token) 进行登录，其会自动委托给 Security Manager，调用之前必须通过 SecurityUtils.setSecurityManager() 设置；</li>
 <li>SecurityManager 负责真正的身份验证逻辑；它会委托给 Authenticator 进行身份验证；</li>
 <li>Authenticator 才是真正的身份验证者，Shiro API 中核心的身份认证入口点，此处可以自定义插入自己的实现Authenticator 可能会委托给相应的 AuthenticationStrategy 进行多 Realm 身份验证，默认 ModularRealmAuthenticator 会调用 AuthenticationStrategy 进行多 Realm 身份验证；</li>
 <li>Authenticator 会把相应的 token 传入 Realm，从 Realm 获取身份验证信息，如果没有返回 / 抛出异常表示身份验证失败了。此处可以配置多个 Realm，将按照相应的顺序及策略进行访问。</li>
+<li>Realm 现在会调用 <strong><em>doGetAuthenticationInfo(AuthenticationToken token)</em></strong>   从持久层获取当前令牌对应用户名的用户信息，接下来会根据默认的密码匹配器进行比对。</li>
 </ol>
+<p><strong><em>Realm</em></strong> 接口实现类  <strong><em>AuthenticatingRealm</em></strong>   的 认证逻辑，因为我们之后都是继承这个类实现自己的认证逻辑。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> AuthenticationInfo <span class="title">getAuthenticationInfo</span><span class="params">(AuthenticationToken token)</span> <span class="keyword">throws</span> AuthenticationException </span>&#123;</div><div class="line">		<span class="comment">//从缓存中获取</span></div><div class="line">       AuthenticationInfo info = getCachedAuthenticationInfo(token);</div><div class="line">       <span class="keyword">if</span> (info == <span class="keyword">null</span>) &#123;</div><div class="line">          </div><div class="line">           <span class="comment">//如果没有被缓存，那么直接从持久层取出认证信息，注意现在只是取出 并没有认证</span></div><div class="line">           info = doGetAuthenticationInfo(token);</div><div class="line">           log.debug(<span class="string">"Looked up AuthenticationInfo [&#123;&#125;] from doGetAuthenticationInfo"</span>, info);</div><div class="line">           <span class="keyword">if</span> (token != <span class="keyword">null</span> &amp;&amp; info != <span class="keyword">null</span>) &#123;</div><div class="line">               cacheAuthenticationInfoIfPossible(token, info);</div><div class="line">           &#125;</div><div class="line">       &#125; <span class="keyword">else</span> &#123;</div><div class="line">           log.debug(<span class="string">"Using cached authentication info [&#123;&#125;] to perform credentials matching."</span>, info);</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       <span class="keyword">if</span> (info != <span class="keyword">null</span>) &#123;</div><div class="line">           <span class="comment">//验证密码，验证通过执行下面的逻辑</span></div><div class="line">           assertCredentialsMatch(token, info);</div><div class="line">       &#125; <span class="keyword">else</span> &#123;</div><div class="line">           log.debug(<span class="string">"No AuthenticationInfo found for submitted AuthenticationToken [&#123;&#125;].  Returning null."</span>, token);</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       <span class="keyword">return</span> info;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>授权信息流程与此流程无差</p>
 
       
     </div>
@@ -385,6 +389,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/03/30/重构/" rel="prev" title="重构培训">
+                重构培训 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -456,7 +464,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -469,7 +477,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-count">14</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
